@@ -24,6 +24,20 @@ chown -R root:${GID} /opt/scripts
 chmod -R 750 /opt/scripts
 chown -R ${UID}:${GID} ${DATA_DIR}
 
+# Install Wine if requested
+if [ "${INSTALL_WINE}" == "true" ]; then
+    if ! command -v wine &> /dev/null; then
+        echo "---Installing Wine for Windows executables---"
+        apt-get update
+        apt-get install -y --no-install-recommends wine wine64 && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*
+        echo "---Wine installation completed---"
+    else
+        echo "---Wine is already installed---"
+    fi
+fi
+
 # Fix for CSDM not working properly
 if [ -f "${SERVER_DIR}/cstrike/addons/sourcemod/gamedata/cssdm.games.txt" ]; then
   chmod 550 ${SERVER_DIR}/cstrike/addons/sourcemod/gamedata/cssdm.games.txt

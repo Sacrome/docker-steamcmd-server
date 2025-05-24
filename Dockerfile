@@ -22,6 +22,7 @@ ENV USERNAME=""
 ENV PASSWRD=""
 ENV USER="steam"
 ENV DATA_PERM=770
+ENV INSTALL_WINE="false"
 
 RUN mkdir $DATA_DIR && \
 	mkdir $STEAMCMD_DIR && \
@@ -30,8 +31,14 @@ RUN mkdir $DATA_DIR && \
 	chown -R $USER $DATA_DIR && \
 	ulimit -n 2048
 
-ADD /scripts/ /opt/scripts/
-RUN chmod -R 770 /opt/scripts/
+ADD ./scripts/ /opt/scripts/
+RUN chmod -R 770 /opt/scripts/ && \
+    apt-get update && \
+    apt-get install -y dos2unix && \
+    dos2unix /opt/scripts/*.sh && \
+    apt-get remove -y dos2unix && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 #Server Start
 ENTRYPOINT ["/opt/scripts/start.sh"]

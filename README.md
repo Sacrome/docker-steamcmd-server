@@ -17,6 +17,7 @@ This Docker will download and install SteamCMD and the according game that is pu
 | VALIDATE | Validates the game data | blank |
 | USERNAME | Leave blank for anonymous login | blank |
 | PASSWRD | Leave blank for anonymous login | blank |
+| INSTALL_WINE | Set to "true" to install Wine for Windows executables | false |
 
 ## Run example for CS:Source
 ```
@@ -28,10 +29,25 @@ docker run --name CSSource -d \
 	--env 'GAME_PARAMS=-secure +maxplayers 32 +map de_dust2' \
 	--env 'UID=99' \
 	--env 'GID=100' \
+	--env 'USERNAME=yoursteamusername' \
+	--env 'PASSWRD=yoursteampassword' \
+	--env 'INSTALL_WINE=false' \
 	--volume /path/to/steamcmd:/serverdata/steamcmd \
 	--volume /path/to/cstrikesource:/serverdata/serverfiles \
 	ich777/steamcmd:latest
 ```
+
+> **Note**: If you don't need to use a Steam account (for games that support anonymous login), you can remove the USERNAME and PASSWRD environment variables or leave them blank.
+>
+> **Server Executable Detection**: The container now automatically detects and runs the appropriate server executable. It checks for the following executables in order:
+> 1. Source Dedicated Server (srcds_run)
+> 2. Windows server executable (server.exe) - requires Wine (set INSTALL_WINE=true)
+> 3. Generic Linux server executable (server)
+> 4. Server with start_server.sh script
+> 5. Server with start.sh script
+> 6. Any executable file found in the server directory
+>
+> If no executable is found, the container will keep running so you can connect to it and start the server manually.
 
 This Docker was mainly edited for better use with Unraid, if you don't use Unraid you should definitely try it!
 
